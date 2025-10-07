@@ -66,12 +66,13 @@ update-firmware:
     fwupdmgr get-updates
     fwupdmgr update
 
-# Clean up old up unused podman images, volumes, flatpak packages and rpm-ostree content
+# Clean up old up unused podman images, volumes, flatpak packages (if not on a CoreOS variant) and rpm-ostree content
 clean-system:
     #!/usr/bin/bash
     podman image prune -af
     podman volume prune -f
-    flatpak uninstall --unused
+    grep -q VARIANT=\"CoreOS\" /etc/os-release \
+			|| flatpak uninstall --unused
     rpm-ostree cleanup -bm
 
 # Check for local overrides
